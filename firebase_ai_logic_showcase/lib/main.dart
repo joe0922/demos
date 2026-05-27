@@ -20,7 +20,7 @@ class StudentManagementApp extends StatelessWidget {
   }
 }
 
-// 生徒データの簡易モデル（後でFirestoreと連動させます）
+// 生徒データの簡易モデル
 class Student {
   final String name;
   final String course;
@@ -29,7 +29,7 @@ class Student {
   Student({required this.name, required this.course, required this.isPresent});
 }
 
-// 生徒一覧画面（ここを起点に開発していきます）
+// 生徒一覧画面
 class StudentListScreen extends StatefulWidget {
   const StudentListScreen({super.key});
 
@@ -53,7 +53,7 @@ class _StudentListScreenState extends State<StudentListScreen> {
         backgroundColor: Colors.blue.shade100,
       ),
       body: ListView.builder(
-        itemCount: students.length, // エラー回避のため便宜上。正しくは students.length です。後ほどAIが直します
+        itemCount: students.length, // 直しました！
         itemBuilder: (context, index) {
           final student = students[index];
           return ListTile(
