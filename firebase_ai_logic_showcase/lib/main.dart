@@ -1,53 +1,80 @@
-// Copyright 2025 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'flutter_firebase_ai_demo.dart';
-import './firebase_options.dart';
-import 'shared/app_state.dart';
 
-void main() async {
-  FirebaseOptions options = DefaultFirebaseOptions.currentPlatform;
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: options);
-  runApp(const ProviderScope(child: MyApp()));
+void main() {
+  runApp(const StudentManagementApp());
 }
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+class StudentManagementApp extends StatelessWidget {
+  const StudentManagementApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final appColor = ref.watch(appStateProvider).appColor;
+  Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter AI Playground',
-      home: DemoHomeScreen(),
+      title: '生徒管理システム',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: appColor,
-          brightness: Brightness.dark,
-          dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot,
-        ).copyWith(surface: appColor),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Colors.grey.shade900,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey.shade400,
-        ),
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
       ),
-      debugShowCheckedModeBanner: false,
+      home: const StudentListScreen(),
+    );
+  }
+}
+
+// 生徒データの簡易モデル（後でFirestoreと連動させます）
+class Student {
+  final String name;
+  final String course;
+  final bool isPresent;
+
+  Student({required this.name, required this.course, required this.isPresent});
+}
+
+// 生徒一覧画面（ここを起点に開発していきます）
+class StudentListScreen extends StatefulWidget {
+  const StudentListScreen({super.key});
+
+  @override
+  State<StudentListScreen> createState() => _StudentListScreenState();
+}
+
+class _StudentListScreenState extends State<StudentListScreen> {
+  // テスト用のダミーデータ
+  final List<Student> students = [
+    Student(name: '山田 太郎', course: 'Scratchコース', isPresent: true),
+    Student(name: '佐藤 次郎', course: 'Pythonコース', isPresent: false),
+    Student(name: '鈴木 花子', course: 'Web開発コース', isPresent: true),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('生徒一覧（Make Programming）'),
+        backgroundColor: Colors.blue.shade100,
+      ),
+      body: ListView.builder(
+        itemCount: students.length, // エラー回避のため便宜上。正しくは students.length です。後ほどAIが直します
+        itemBuilder: (context, index) {
+          final student = students[index];
+          return ListTile(
+            leading: CircleAvatar(
+              child: Text(student.name[0]),
+            ),
+            title: Text(student.name),
+            subtitle: Text(student.course),
+            trailing: Chip(
+              label: Text(student.isPresent ? '出席' : '欠席'),
+              backgroundColor: student.isPresent ? Colors.green.shade100 : Colors.red.shade100,
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // ここに生徒追加のアクションを後で書きます
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
